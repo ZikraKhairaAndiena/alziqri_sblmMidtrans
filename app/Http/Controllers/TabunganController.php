@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guru;
 use App\Models\Siswa;
 use App\Models\Tabungan;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class TabunganController extends Controller
@@ -25,11 +27,25 @@ class TabunganController extends Controller
             }
             $tabungans = Tabungan::where('siswa_id', $siswa->id)->orderByDesc('tanggal')->get();
             return view('admin.tabungan.ortu', compact('tabungans', 'siswa'));
-        } else {
-            // Guru bisa lihat semua tabungan
-            $tabungans = Tabungan::with('siswa')->orderByDesc('tanggal')->get();
-            return view('admin.tabungan.index', compact('tabungans'));
         }
+
+        $siswaList = Siswa::whereHas('ppdb', function ($query) {
+            $query->where('status', 'Diterima');
+        })
+        ->with('tabungans')
+        ->orderByDesc('id')
+        ->get()
+        ->map(function ($siswa) {
+            $saldo = $siswa->tabungans->last()?->saldo ?? 0;
+            return [
+                'id' => $siswa->id,
+                'nama_siswa' => $siswa->nama_siswa,
+                'saldo' => $saldo
+            ];
+        });
+
+        return view('admin.tabungan.index', compact('siswaList'));
+
     }
 
     /**
@@ -41,7 +57,10 @@ class TabunganController extends Controller
             abort(403);
         }
 
-        $siswas = Siswa::all();
+        $siswas = Siswa::where('status', 'aktif') // ✅ hanya yg aktif
+        ->whereHas('ppdb', fn($q) => $q->where('status','Diterima'))
+        ->orderBy('nama_siswa')
+        ->get();
         return view('admin.tabungan.create', compact('siswas'));
     }
 
@@ -59,7 +78,7 @@ class TabunganController extends Controller
             'tanggal' => 'required|date',
             'jenis_transaksi' => 'required|in:setor,tarik',
             'jumlah' => 'required|numeric|min:0',
-            'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'ket' => 'required|string',
         ]);
 
         $lastSaldo = Tabungan::where('siswa_id', $request->siswa_id)->latest()->first();
@@ -76,54 +95,45 @@ class TabunganController extends Controller
             ? $saldoSebelumnya + $request->jumlah
             : $saldoSebelumnya - $request->jumlah;
 
-        $buktiFileName = null;
-        if ($request->hasFile('bukti')) {
-            $file = $request->file('bukti');
-            $buktiFileName = time() . '_bukti_' . $file->getClientOriginalName();
-            $file->move(public_path('img'), $buktiFileName);
-        }
-
         Tabungan::create([
             'siswa_id' => $request->siswa_id,
             'tanggal' => $request->tanggal,
             'jenis_transaksi' => $request->jenis_transaksi,
             'jumlah' => $request->jumlah,
             'saldo' => $saldoBaru,
-            'bukti' => $buktiFileName,
+            'ket' => $request->ket,
         ]);
 
         return redirect()->route('admin.tabungan.index')->with('success', 'Data tabungan berhasil disimpan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tabungan $tabungan)
+    public function riwayat($siswa_id)
     {
-        //
+        $siswa = Siswa::findOrFail($siswa_id);
+        $tabungans = Tabungan::where('siswa_id', $siswa->id)
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('admin.tabungan.riwayat', compact('tabungans', 'siswa'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tabungan $tabungan)
+    public function exportPdf($siswa_id)
     {
-        //
-    }
+        $siswa = Siswa::findOrFail($siswa_id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Tabungan $tabungan)
-    {
-        //
-    }
+        $tabungans = Tabungan::where('siswa_id', $siswa->id)
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Tabungan $tabungan)
-    {
-        //
+        // ambil data kepala sekolah
+        $kepsek = Guru::where('jabatan', 'kepala_sekolah')->first();
+
+        $pdf = PDF::loadView('admin.tabungan.cetak', compact('tabungans', 'siswa', 'kepsek'))
+            ->setPaper('A4', 'portrait');
+
+        // preview di tab baru
+        return $pdf->stream('Riwayat-Tabungan-' . $siswa->nama_siswa . '.pdf');
     }
 }

@@ -15,7 +15,7 @@ class GuruController extends Controller
      */
     public function index()
     {
-        $gurus = Guru::with('user')->get();
+        $gurus = Guru::latest()->paginate(7);
         return view('admin.guru.index', compact('gurus'));
     }
 
@@ -44,9 +44,10 @@ class GuruController extends Controller
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'pend_terakhir' => 'required|string|max:30',
             'tgl_mulai_ngajar' => 'required|date',
+            'jabatan' => 'required|in:kepala_sekolah,guru_kelas',
 
         ]);
-         $guru = new Guru($request->all());
+        $guru = new Guru($request->all());
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
@@ -97,6 +98,7 @@ class GuruController extends Controller
             'foto'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'tgl_mulai_ngajar'=> 'required|date',
             'pend_terakhir'   => 'required|string|max:30',
+            'jabatan'         => 'required|in:kepala_sekolah,guru_kelas',
         ]);
 
         $data = $request->all();
@@ -127,7 +129,7 @@ class GuruController extends Controller
         if ($guru->foto && file_exists(public_path('img/' . $guru->foto))) {
             unlink(public_path('img/' . $guru->foto));
         }
-        
+
         $guru->delete();
 
         return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil dihapus.');

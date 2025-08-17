@@ -6,10 +6,14 @@
       <div class="col-md-6 offset-md-3">
         <div class="card my-5">
 
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
           <form method="POST" action="{{ route('register') }}" class="card-body cardbody-color p-lg-5">
             @csrf
             <div class="text-center">
-              <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
+              <img src="{{ asset('img/LogoAlZiqri.png') }}" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
                 width="200px" alt="profile">
             </div>
 
@@ -18,6 +22,7 @@
             <div class="mb-3">
                 <label for="nama" class="form-label">Nama</label>
                 <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan Nama" value="{{ old('nama') }}">
+                @error('nama') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>

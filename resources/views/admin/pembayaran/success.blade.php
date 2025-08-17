@@ -5,10 +5,6 @@
 @section('content')
 <div class="content-wrapper">
     <div class="card shadow-sm">
-        <!-- Header -->
-        <div class="card-header bg-success text-white">
-            <h4 class="fw-bold mb-0">Pembayaran Berhasil</h4>
-        </div>
 
         <!-- Body -->
         <div class="card-body text-center">
@@ -22,7 +18,7 @@
 
             <div class="alert alert-success text-start mx-auto" style="max-width: 400px;">
                 <strong>Status:</strong> Paid <br>
-                <strong>Tanggal:</strong> {{ now()->format('d-m-Y H:i') }}
+                <strong>Tanggal:</strong> {{ now()->format('d-m-Y') }}
             </div>
 
             <a href="{{ route('admin.pembayaran.index') }}" class="btn btn-primary">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class SiswaController extends Controller
     {
          $siswas = Siswa::whereHas('ppdb', function ($query) {
             $query->where('status', 'Diterima');
-        })->with('ppdb')->get();
+        })->with('ppdb')->orderBy('id', 'desc')->get();
 
         return view('admin.siswa.index', compact('siswas'));
     }
@@ -56,12 +57,16 @@ class SiswaController extends Controller
     public function edit($id)
     {
         $siswa = Siswa::with('ppdb')->findOrFail($id);
+        // ambil kelas dengan tahun ajaran yang masih aktif
+        $kelas = Kelas::whereHas('tahunAjaran', function ($q) {
+            $q->where('status', 'aktif');
+        })->get();
 
         if ($siswa->ppdb->status !== 'Diterima') {
             abort(403, 'Siswa belum diterima');
         }
 
-        return view('admin.siswa.edit', compact('siswa'));
+        return view('admin.siswa.edit', compact('siswa', 'kelas'));
     }
 
     /**
@@ -73,6 +78,7 @@ class SiswaController extends Controller
 
         $request->validate([
             'nama_siswa' => 'required|string|max:100',
+            'nisn' => 'required|string|max:20|unique:siswas,nisn,' . $id,
             'jenis_kelamin' => 'required|in:L,P',
             'tmp_lahir' => 'required|string|max:20',
             'tgl_lahir' => 'required|date',
@@ -82,8 +88,8 @@ class SiswaController extends Controller
             'jmlh_saudara_kandung' => 'required|integer',
             'alamat' => 'required',
             'tmp_tinggal' => 'required|in:orang_tua,wali,nenek,saudara',
-            'no_nik' => 'required|string|max:25',
-            'no_kk' => 'required|string|max:25',
+            'no_nik' => 'required|digits:16',
+            'no_kk' => 'required|digits:16',
             'no_akte' => 'required|string|max:25',
             'nama_wali' => 'required|string|max:100',
             'no_telp' => 'required|string|max:15',

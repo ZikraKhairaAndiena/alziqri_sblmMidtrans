@@ -14,36 +14,66 @@
                 @method('PUT')
 
                 <div class="mb-3">
-                    <label>NISN</label>
-                    <input type="text" name="nisn" class="form-control @error('nisn') is-invalid @enderror" value="{{ old('nisn', $siswa->nisn) }}" required>
+                    <label>NISN<span class="text-danger">*</span></label>
+                    <input type="text" name="nisn" class="form-control @error('nisn') is-invalid @enderror" value="{{ old('nisn', $siswa->nisn) }}" placeholder="Masukkan NISN" required>
                     @error('nisn') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Nama Siswa</label>
-                    <input type="text" name="nama_siswa" class="form-control" value="{{ $siswa->nama_siswa }}" required>
+                    <label>Nama Siswa<span class="text-danger">*</span></label>
+                    <input type="text" name="nama_siswa"class="form-control @error('nama_siswa') is-invalid @enderror"value="{{ old('nama_siswa', $siswa->nama_siswa) }}"placeholder="Masukkan nama siswa" required>
+                    @error('nama_siswa') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="form-select" required>
-                        <option value="L" {{ $siswa->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="P" {{ $siswa->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
+                    <label>Kelas<span class="text-danger">*</span></label>
+                    <select name="kelas_id" id="kelas_id" class="form-select @error('kelas_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Kelas --</option>
+                        @foreach($kelas as $k)
+                            <option value="{{ $k->id }}" {{ old('kelas_id', $siswa->kelas_id) == $k->id ? 'selected' : '' }}>
+                                {{ $k->nama_kelas }}
+                            </option>
+                        @endforeach
                     </select>
+                    @error('kelas_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Tempat Lahir</label>
-                    <input type="text" name="tmp_lahir" class="form-control" value="{{ $siswa->tmp_lahir }}" required>
+                    <label>Jenis Kelamin<span class="text-danger">*</span></label>
+                    <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
+                        <option value="L" {{ old('jenis_kelamin', $siswa->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="P" {{ old('jenis_kelamin', $siswa->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                    @error('jenis_kelamin') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
+                {{-- <div class="mb-3">
+                    <label>Tempat Lahir<span class="text-danger">*</span></label>
+                    <input type="text" name="tmp_lahir" class="form-control @error('tmp_lahir') is-invalid @enderror" value="{{ old('tmp_lahir', $siswa->tmp_lahir) }}" placeholder="Masukkan tempat lahir" required>
+                    @error('tmp_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Tanggal Lahir</label>
-                    <input type="date" name="tgl_lahir" class="form-control" value="{{ $siswa->tgl_lahir }}" required>
+                    <label>Tanggal Lahir<span class="text-danger">*</span></label>
+                    <input type="date" name="tgl_lahir" class="form-control @error('tgl_lahir') is-invalid @enderror" value="{{ old('tgl_lahir', $siswa->tgl_lahir) }}" required>
+                    @error('tgl_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div> --}}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Tempat Lahir<span class="text-danger">*</span></label>
+                        <input type="text" name="tmp_lahir" class="form-control @error('tmp_lahir') is-invalid @enderror" value="{{ old('tmp_lahir', $siswa->tmp_lahir) }}" placeholder="Masukkan tempat lahir" required>
+                            @error('tmp_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Tanggal Lahir<span class="text-danger">*</span></label>
+                        <input type="date" name="tgl_lahir" class="form-control @error('tgl_lahir') is-invalid @enderror" value="{{ old('tgl_lahir', $siswa->tgl_lahir) }}" required>
+                    @error('tgl_lahir') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label>Agama</label>
+                    <label>Agama<span class="text-danger">*</span></label>
                     <select name="agama" class="form-select @error('agama') is-invalid @enderror" required>
                         <option value="islam" {{ old('agama', $siswa->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
                         <option value="kristen" {{ old('agama', $siswa->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
@@ -55,26 +85,26 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Suku Bangsa</label>
+                    <label>Suku Bangsa<span class="text-danger">*</span></label>
                     <input type="text" name="suku_bangsa" class="form-control @error('suku_bangsa') is-invalid @enderror" value="{{ old('suku_bangsa', $siswa->suku_bangsa) }}">
                     @error('suku_bangsa') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label>Anak ke</label>
+                        <label>Anak ke<span class="text-danger">*</span></label>
                         <input type="number" name="anak_ke" min="0" class="form-control @error('anak_ke') is-invalid @enderror" value="{{ old('anak_ke', $siswa->anak_ke) }}" required>
                         @error('anak_ke') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label>Jumlah Saudara Kandung</label>
+                        <label>Jumlah Saudara Kandung<span class="text-danger">*</span></label>
                         <input type="number" name="jmlh_saudara_kandung" min="0" class="form-control @error('jmlh_saudara_kandung') is-invalid @enderror" value="{{ old('jmlh_saudara_kandung', $siswa->jmlh_saudara_kandung) }}" required>
                         @error('jmlh_saudara_kandung') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label>Tempat Tinggal</label>
+                    <label>Tempat Tinggal<span class="text-danger">*</span></label>
                     <select name="tmp_tinggal" class="form-select @error('tmp_tinggal') is-invalid @enderror" required>
                         <option value="orang_tua" {{ old('tmp_tinggal', $siswa->tmp_tinggal) == 'orang_tua' ? 'selected' : '' }}>Orang Tua</option>
                         <option value="wali" {{ old('tmp_tinggal', $siswa->tmp_tinggal) == 'wali' ? 'selected' : '' }}>Wali</option>
@@ -85,37 +115,43 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Alamat</label>
-                    <textarea name="alamat" class="form-control" required>{{ $siswa->alamat }}</textarea>
+                    <label>Alamat<span class="text-danger">*</span></label>
+                    <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" placeholder="Masukkan alamat lengkap" required>{{ old('alamat', $siswa->alamat) }}</textarea>
+                    @error('alamat') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>No NIK</label>
-                    <input type="text" name="no_nik" class="form-control" value="{{ $siswa->no_nik }}" required>
+                    <label>No NIK<span class="text-danger">*</span></label>
+                    <input type="text" name="no_nik" class="form-control @error('no_nik') is-invalid @enderror"value="{{ old('no_nik', $siswa->no_nik) }}" placeholder="Masukkan NIK" required>
+                    @error('no_nik') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>No KK</label>
-                    <input type="text" name="no_kk" class="form-control" value="{{ $siswa->no_kk }}" required>
+                    <label>No KK<span class="text-danger">*</span></label>
+                    <input type="text" name="no_kk" class="form-control @error('no_kk') is-invalid @enderror" value="{{ old('no_kk', $siswa->no_kk) }}" placeholder="Masukkan No KK" required>
+                    @error('no_kk') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>No Akte</label>
-                    <input type="text" name="no_akte" class="form-control" value="{{ $siswa->no_akte }}" required>
+                    <label>No Akte<span class="text-danger">*</span></label>
+                    <input type="text" name="no_akte" class="form-control @error('no_akte') is-invalid @enderror" value="{{ old('no_akte', $siswa->no_akte) }}" placeholder="Masukkan No Akte" required>
+                    @error('no_akte') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Nama Wali</label>
-                    <input type="text" name="nama_wali" class="form-control" value="{{ $siswa->nama_wali }}" required>
+                    <label>Nama Wali<span class="text-danger">*</span></label>
+                    <input type="text" name="nama_wali" class="form-control @error('nama_wali') is-invalid @enderror" value="{{ old('nama_wali', $siswa->nama_wali) }}" placeholder="Masukkan nama wali" required>
+                    @error('nama_wali') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>No Telp</label>
-                    <input type="text" name="no_telp" class="form-control" value="{{ $siswa->no_telp }}" required>
+                    <label>No Telp<span class="text-danger">*</span></label>
+                     <input type="text" name="no_telp" class="form-control @error('no_telp') is-invalid @enderror" value="{{ old('no_telp', $siswa->no_telp) }}" placeholder="Masukkan nomor telepon" required>
+                    @error('no_telp') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label>Foto Siswa</label><br>
+                    <label>Foto Siswa<span class="text-danger">*</span></label><br>
                     @if($siswa->foto)
                         <img src="{{ asset('img/' . $siswa->foto) }}" alt="Foto Siswa" width="100" class="mb-2"><br>
                     @endif
@@ -126,7 +162,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Gambar Kartu Keluarga (KK)</label><br>
+                    <label>Gambar Kartu Keluarga (KK)<span class="text-danger">*</span></label><br>
                     @if($siswa->foto_kk)
                         <img src="{{ asset('img/' . $siswa->foto_kk) }}" alt="Gambar KK" width="100" class="mb-2"><br>
                     @endif
@@ -137,7 +173,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label>Gambar Akta Kelahiran</label><br>
+                    <label>Gambar Akta Kelahiran<span class="text-danger">*</span></label><br>
                     @if($siswa->foto_akte)
                         <img src="{{ asset('img/' . $siswa->foto_akte) }}" alt="Gambar Akte" width="100" class="mb-2"><br>
                     @endif

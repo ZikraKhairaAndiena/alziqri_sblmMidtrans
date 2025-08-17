@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{{ asset('css/style_admin.css') }}">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body>
@@ -56,6 +57,33 @@
     <!-- Custom js for this page -->
     <script src="{{ asset('js/dashboard.js') }}"></script>
     <!-- End custom js for this page -->
+
+    <!-- SweetAlert2 -->
+{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Sukses!',
+            text: '{{ session('success') }}',
+            timer: 2500,
+            showConfirmButton: false
+        });
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            timer: 2500,
+            showConfirmButton: false
+        });
+    @endif
+</script> --}}
+
+
 @stack('scripts')
 </body>
 </html>

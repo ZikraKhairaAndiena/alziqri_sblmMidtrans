@@ -18,7 +18,11 @@
                                 </tr>
                                 <tr>
                                     <th>Tanggal Daftar</th>
-                                    <td>{{ $ppdbs->tgl_daftar }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($ppdbs->tgl_daftar)->format('d-m-Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tahun Ajaran</th>
+                                    <td>{{ $ppdbs->thn_ajaran->nama ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
@@ -31,10 +35,6 @@
                                             <span class="badge bg-warning text-dark">Diproses</span>
                                         @endif
                                     </td>
-                                </tr>
-                                <tr>
-                                    <th>Tahun Ajaran</th>
-                                    <td>{{ $ppdbs->thn_ajaran->nama ?? '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>

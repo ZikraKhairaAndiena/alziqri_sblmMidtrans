@@ -22,11 +22,17 @@ class Guru extends Model
         'foto',
         'tgl_mulai_ngajar',
         'pend_terakhir',
+        'jabatan',
 
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function kelas()
+    {
+        return $this->hasOne(Kelas::class, 'guru_id');
     }
 }

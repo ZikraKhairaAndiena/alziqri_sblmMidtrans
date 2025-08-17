@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
 use App\Models\ThnAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -93,6 +94,15 @@ class ThnAjaranController extends Controller
         if ($request->status === 'aktif') {
             // Set semua tahun ajaran lain jadi tidak_aktif
             ThnAjaran::where('status', 'aktif')->where('id', '!=', $id)->update(['status' => 'tidak_aktif']);
+
+            Siswa::whereHas('ppdb', function($q) use ($id){
+                $q->where('thn_ajaran_id', $id)->where('status', 'Diterima');
+            })->update(['status' => 'aktif']);
+        } else {
+            // Nonaktifkan semua siswa di tahun ajaran ini
+            Siswa::whereHas('ppdb', function($q) use ($id){
+                $q->where('thn_ajaran_id', $id);
+            })->update(['status' => 'tidak_aktif']);
         }
 
         $thn_ajaran->update([
@@ -111,6 +121,6 @@ class ThnAjaranController extends Controller
         $thn_ajaran = ThnAjaran::findOrFail($id);
         $thn_ajaran->delete();
 
-        return redirect()->route('admin.thn_ajaran.index')->with('success', 'Data siswa berhasil dihapus!');
+        return redirect()->route('admin.thn_ajaran.index')->with('success', 'Tahun Ajaran deleted successfully!');
     }
 }

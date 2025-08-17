@@ -6,6 +6,10 @@
       <div class="col-md-6 offset-md-3">
         <div class="card my-5">
 
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
           <form class="card-body cardbody-color p-lg-5" action="{{ route('login') }}" method="POST">
             @csrf
 

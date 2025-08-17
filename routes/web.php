@@ -1,18 +1,24 @@
  <?php
 
 use App\Http\Controllers\AdminPpdbController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FonnteController;
 use App\Http\Controllers\GuruController;
+use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\KehadiranController;
+use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PpdbController;
+use App\Http\Controllers\RaporController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\SppController;
 use App\Http\Controllers\TabunganController;
 use App\Http\Controllers\ThnAjaranController;
 use App\Http\Controllers\UserController;
+use App\Models\Informasi;
 use App\Models\Pembayaran;
 use App\Models\Ppdb;
 use App\Models\Thn_ajaran;
@@ -30,7 +36,16 @@ Route::view('/', 'umum.home')->name('umum.home');
 Route::get('/profil', function () {return view('umum.profil');})->name('umum.profil');
 
 // Route untuk halaman kegiatan
-Route::get('/kegiatan', function () {return view('umum.kegiatan');})->name('umum.kegiatan');
+Route::get('/kegiatan', function () {
+    $informasi = Informasi::where('type', 'info')->get();
+    return view('umum.kegiatan', compact('informasi'));
+})->name('umum.kegiatan');
+
+Route::get('/kegiatan/{id}', function ($id) {
+    $informasi = Informasi::where('type', 'info')->get()->find($id);
+    return view('umum.kegiatan_detail', compact('informasi'));
+})->name('umum.kegiatan.detail');
+// Route::get('/kegiatan', function () {return view('umum.kegiatan');})->name('umum.kegiatan');
 
 // Route untuk halaman kontak
 Route::get('/kontak', function () {return view('umum.kontak');})->name('umum.kontak');
@@ -45,9 +60,8 @@ Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 
 // Route untuk halaman dashboard
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index']) ->middleware(['auth'])->name('dashboard');
+// Route::get('/dashboard', function () {return view('admin.dashboard');})->name('admin.dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/fonnte', [FonnteController::class, 'index'])->name('admin.fonnte.index');
@@ -97,37 +111,57 @@ Route::delete('/siswa/{id}', [SiswaController::class, 'destroy'])->name('admin.s
 
 Route::middleware(['auth', 'check.ppdb'])->group(function () {
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('admin.pembayaran.index');
-    Route::get('/pembayaran/create', [PembayaranController::class, 'create'])->name('admin.pembayaran.create');
+    Route::get('/pembayaran/create/{siswa_id}', [PembayaranController::class, 'create'])->name('admin.pembayaran.create');
     Route::post('/pembayaran/store', [PembayaranController::class, 'store']) ->name('admin.pembayaran.store');
     Route::get('/pembayaran/success', [PembayaranController::class, 'success'])->name('admin.pembayaran.success');
+    Route::get('/pembayaran/invoice/{id}', [PembayaranController::class, 'invoice'])->name('admin.pembayaran.invoice');
 
     Route::get('/kehadiran/ortu', [KehadiranController::class, 'index'])->name('admin.kehadiran.ortu');
     Route::get('/tabungan/ortu', [TabunganController::class, 'index'])->name('admin.tabungan.ortu');
-    // Route::get('/rapor', [RaporController::class, 'index'])->name('rapor.index');
+    Route::get('/rapor/ortu', [RaporController::class, 'ortu'])->name('admin.rapor.ortu');
+    Route::get('/rapor/ortu/cetak/{id}', [RaporController::class, 'cetak'])->name('admin.rapor.cetak');
 });
 
-// Route::get('/pembayaran/create', [PembayaranController::class, 'create'])->name('admin.pembayaran.create');
-// Route::post('/pembayaran/store', [PembayaranController::class, 'store'])->name('admin.pembayaran.store');
-// Route::get('/pembayaran/success', [PembayaranController::class, 'success'])->name('admin.pembayaran.success');
-Route::post('/midtrans/callback', [PembayaranController::class, 'callback']);
+// Route::post('midtrans/callback', [PembayaranController::class, 'callback']);
+// Route::post('/pembayaran/callback', [MidtransWebhookController::class, 'callback'])
+//     ->name('pembayaran.callback');
 
 // Halaman pending
 Route::view('/pending', 'admin.pending')->name('admin.pending');
 
-//Route untuk halaman tabungan guru
+Route::get('/pembayaran/{siswa_id}/riwayat', [PembayaranController::class, 'riwayat'])->name('admin.pembayaran.detail')->middleware('auth');
+
+//Route untuk halaman role guru
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/tabungan', [TabunganController::class, 'index'])->name('admin.tabungan.index');
     Route::get('/tabungan/create', [TabunganController::class, 'create'])->name('admin.tabungan.create');
     Route::post('/tabungan', [TabunganController::class, 'store'])->name('admin.tabungan.store');
+    Route::get('/tabungan/{siswa_id}/riwayat', [TabunganController::class, 'riwayat'])->name('admin.tabungan.riwayat');
+    Route::get('tabungan/{siswa_id}/pdf', [TabunganController::class, 'exportPdf'])->name('admin.tabungan.cetak');
 
     Route::get('/kehadiran', [KehadiranController::class, 'index'])->name('admin.kehadiran.index');
     Route::get('/kehadiran/create', [KehadiranController::class, 'create'])->name('admin.kehadiran.create');
     Route::post('/kehadiran', [KehadiranController::class, 'store'])->name('admin.kehadiran.store');
     Route::get('/kehadiran/{id}', [KehadiranController::class, 'show'])->name('admin.kehadiran.show');
+
     // Route::get('/kehadiran/{id}/edit', [KehadiranController::class, 'edit'])->name('kehadiran.edit');
     // Route::put('/kehadiran/{id}', [KehadiranController::class, 'update'])->name('admin.kehadiran.update');
     Route::delete('/kehadiran/{id}', [KehadiranController::class, 'destroy'])->name('admin.kehadiran.destroy');
+    // Route::get('/exports/kehadiran', [KehadiranController::class, 'export'])->name('admin.kehadiran.export');
+    Route::get('/exports/kehadiran', [KehadiranController::class, 'export'])->name('admin.kehadiran.export');
+
+
 });
+
+// Route untuk halaman rapor
+Route::get('/rapor', [RaporController::class, 'index'])->name('admin.rapor.index');
+Route::get('/rapor/create', [RaporController::class, 'create'])->name('admin.rapor.create');
+Route::post('/rapor', [RaporController::class, 'store'])->name('admin.rapor.store');
+Route::get('/rapor/{id}/edit', [RaporController::class, 'edit'])->name('admin.rapor.edit');
+Route::get('/rapor/{id}', [RaporController::class, 'show'])->name('admin.rapor.show');
+Route::put('/rapor/{id}', [RaporController::class, 'update'])->name('admin.rapor.update');
+Route::delete('/rapor/{id}', [RaporController::class, 'destroy'])->name('admin.rapor.destroy');
+Route::get('/rapor/cetak/{id}', [RaporController::class, 'cetak'])->name('admin.rapor.cetak');
 
 // Route untuk halaman tahun ajaran
 Route::get('/thn_ajaran', [ThnAjaranController::class, 'index'])->name('admin.thn_ajaran.index');
@@ -137,3 +171,21 @@ Route::get('/thn_ajaran/{id}/edit', [ThnAjaranController::class, 'edit'])->name(
 Route::get('/thn_ajaran/{id}', [ThnAjaranController::class, 'show'])->name('admin.thn_ajaran.show');
 Route::put('/thn_ajaran/{id}', [ThnAjaranController::class, 'update'])->name('admin.thn_ajaran.update');
 Route::delete('/thn_ajaran/{id}', [ThnAjaranController::class, 'destroy'])->name('admin.thn_ajaran.destroy');
+
+// Route untuk halaman kelas
+Route::get('/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
+Route::get('/kelas/create', [KelasController::class, 'create'])->name('admin.kelas.create');
+Route::post('/kelas', [KelasController::class, 'store'])->name('admin.kelas.store');
+Route::get('/kelas/{id}/edit', [KelasController::class, 'edit'])->name('admin.kelas.edit');
+Route::get('/kelas/{id}', [KelasController::class, 'show'])->name('admin.kelas.show');
+Route::put('/kelas/{id}', [KelasController::class, 'update'])->name('admin.kelas.update');
+Route::delete('/kelas/{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
+
+// Route untuk halaman informasi
+Route::get('/informasi', [InformasiController::class, 'index'])->name('admin.informasi.index');
+Route::get('/informasi/create', [InformasiController::class, 'create'])->name('admin.informasi.create');
+Route::post('/informasi', [InformasiController::class, 'store'])->name('admin.informasi.store');
+Route::get('/informasi/{id}/edit', [InformasiController::class, 'edit'])->name('admin.informasi.edit');
+Route::get('/informasi/{id}', [InformasiController::class, 'show'])->name('admin.informasi.show');
+Route::put('/informasi/{id}', [InformasiController::class, 'update'])->name('admin.informasi.update');
+Route::delete('/informasi/{id}', [InformasiController::class, 'destroy'])->name('admin.informasi.destroy');

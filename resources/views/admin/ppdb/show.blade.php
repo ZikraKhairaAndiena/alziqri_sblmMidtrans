@@ -10,13 +10,13 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <div class="text-center">
+                        {{-- <div class="text-center">
                             @if($siswa->foto)
                                 <img src="{{ asset('img/' . $siswa->foto) }}" alt="{{ $siswa->nama_siswa }}" width="200" class="img-thumbnail">
                             @else
                                 <em>Foto siswa belum diunggah</em>
                             @endif
-                        </div>
+                        </div> --}}
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
@@ -83,7 +83,9 @@
                                     <th>Gambar KK</th>
                                     <td>
                                         @if($siswa->foto_kk)
-                                            <img src="{{ asset('img/' . $siswa->foto_kk) }}" alt="{{ $siswa->nama_siswa }}" style="width:100px;">
+                                            <img src="{{ asset('img/' . $siswa->foto_kk) }}"
+                                                alt="{{ $siswa->nama_siswa }}"
+                                                class="img-thumbnail">
                                         @else
                                             <em>Belum diunggah</em>
                                         @endif
@@ -93,7 +95,9 @@
                                     <th>Gambar Akte</th>
                                     <td>
                                         @if($siswa->foto_akte)
-                                            <img src="{{ asset('img/' . $siswa->foto_akte) }}" alt="{{ $siswa->nama_siswa }}" style="width:100px;">
+                                            <img src="{{ asset('img/' . $siswa->foto_akte) }}"
+                                                alt="{{ $siswa->nama_siswa }}"
+                                                class="img-thumbnail">
                                         @else
                                             <em>Belum diunggah</em>
                                         @endif
@@ -130,3 +134,12 @@
     </div>
 </div>
 @endsection
+
+<style>
+    .table img.img-thumbnail {
+        width: 500px !important; /* sebelumnya 200px */
+        height: auto !important;
+        border-radius: 0 !important; /* supaya tidak bulat */
+        object-fit: contain !important; /* supaya gambar tidak terpotong */
+    }
+</style>

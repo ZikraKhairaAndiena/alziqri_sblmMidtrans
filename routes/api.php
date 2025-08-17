@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MidtransWebhookController;
-use App\Http\Controllers\PembayaranController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-Route::post('/midtrans/callback', [PembayaranController::class, 'callback']);
+Route::post('/pembayaran/callback', [MidtransWebhookController::class, 'callback'])
+    ->name('pembayaran.callback');

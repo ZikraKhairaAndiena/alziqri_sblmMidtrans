@@ -37,6 +37,10 @@
                                     <td>{{ $siswa->nama_siswa }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Kelas</th>
+                                    <td>{{ $siswa->kelas->nama_kelas ?? '-' }}</td>
+                                </tr>
+                                <tr>
                                     <th>Jenis Kelamin</th>
                                     <td>{{ $siswa->jenis_kelamin }}</td>
                                 </tr>
@@ -92,7 +96,10 @@
                                     <th>Gambar KK</th>
                                     <td>
                                         @if($siswa->foto_kk)
-                                            <img src="{{ asset('img/' . $siswa->foto_kk) }}" alt="{{ $siswa->nama_siswa }}" style="width:100px;">
+                                            <img src="{{ asset('img/' . $siswa->foto_kk) }}"
+                                                alt="{{ $siswa->nama_siswa }}"
+                                                width="200"
+                                                class="img-thumbnail">
                                         @else
                                             <em>Belum diunggah</em>
                                         @endif
@@ -102,7 +109,10 @@
                                     <th>Gambar Akte</th>
                                     <td>
                                         @if($siswa->foto_akte)
-                                            <img src="{{ asset('img/' . $siswa->foto_akte) }}" alt="{{ $siswa->nama_siswa }}" style="width:100px;">
+                                            <img src="{{ asset('img/' . $siswa->foto_akte) }}"
+                                                alt="{{ $siswa->nama_siswa }}"
+                                                width="200"
+                                                class="img-thumbnail">
                                         @else
                                             <em>Belum diunggah</em>
                                         @endif
@@ -127,3 +137,13 @@
     </div>
 </div>
 @endsection
+
+<style>
+    .table img.img-thumbnail {
+        width: 500px !important; /* sebelumnya 200px */
+        height: auto !important;
+        border-radius: 0 !important; /* supaya tidak bulat */
+        object-fit: contain !important; /* supaya gambar tidak terpotong */
+    }
+</style>
+

@@ -29,11 +29,8 @@
                                     <td>{{ \Carbon\Carbon::parse($item->tgl_daftar)->format('d-m-Y') }}</td>
                                     <td>{{ $item->status }}</td>
                                     <td class="text-nowrap">
-                                        <a href="{{ route('admin.ppdb.show', $item->id) }}" class="btn btn-success btn-sm me-1"><i class='bx bx-eye'></i>Detail</a>
+                                        <a href="{{ route('admin.ppdb.show', $item->id) }}" class="btn btn-info btn-sm me-1" title="Lihat Detail"><i class='mdi mdi-eye'></i></a>
                                     </td>
-                                    {{-- <td>
-                                        <a href="{{ route('admin.ppdb.show', $item->id) }}" class="btn btn-sm btn-info">Detail</a>
-                                    </td> --}}
                                 </tr>
                                 @endforeach
                             </tbody>

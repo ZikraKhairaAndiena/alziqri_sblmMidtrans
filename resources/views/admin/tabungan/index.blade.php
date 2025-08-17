@@ -6,55 +6,38 @@
         <div class="col-12 grid-margin">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title text-center fw-bold mb-4">Data Tabungan</h4>
-                    @if(auth()->user()->role === 'orang_tua')
-                        <p><strong>Nama Siswa:</strong> {{ $tabungans->first()?->siswa->nama_siswa ?? '-' }}</p>
+                    <h2 class="card-title text-center fw-bold mb-4">Tabungan Siswa</h2>
+                    <a href="{{ route('admin.tabungan.create') }}" class="btn btn-success btn-sm mb-3">Tambah Tabungan</a>
+
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
+
                     <div class="table-responsive">
-
-                        @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
-
-                        @if(auth()->user()->role === 'guru')
-                            <a href="{{ route('admin.tabungan.create') }}" class="btn btn-success btn-sm mb-3">Tambah Tabungan</a>
-                        @endif
-
-                        <table class="table table-bordered">
+                        <table class="table">
                             <thead>
                                 <tr>
-                                    @if(auth()->user()->role !== 'orang_tua')
-                                        <th>Nama Siswa</th>
-                                    @endif
-                                    <th>Tanggal</th>
-                                    <th>Jenis</th>
-                                    <th>Jumlah</th>
+                                    <th>No</th>
+                                    <th>Nama Siswa</th>
                                     <th>Saldo</th>
-                                    <th>Bukti</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($tabungans as $tabungan)
+                                @foreach($siswaList as $index => $siswa)
                                     <tr>
-                                        @if(auth()->user()->role !== 'orang_tua')
-                                            <td>{{ $tabungan->siswa->nama_siswa }}</td>
-                                        @endif
-                                        <td>{{ \Carbon\Carbon::parse($tabungan->tanggal)->format('d-m-Y') }}</td>
-                                        <td>{{ ucfirst($tabungan->jenis_transaksi) }}</td>
-                                        <td>Rp{{ number_format($tabungan->jumlah, 0, ',', '.') }}</td>
-                                        <td>Rp{{ number_format($tabungan->saldo, 0, ',', '.') }}</td>
-                                        <td>
-                                            @if($tabungan->bukti)
-                                                <img src="{{ asset('img/' . $tabungan->bukti) }}" width="50" height="50" class="rounded">
-                                            @else
-                                                <span class="text-muted">Tidak ada</span>
-                                            @endif
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $siswa['nama_siswa'] }}</td>
+                                        <td>Rp {{ number_format($siswa['saldo'], 0, ',', '.') }}</td>
+                                        <td class="text-nowrap">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('admin.tabungan.riwayat', $siswa['id']) }}" class="btn btn-info btn-sm me-1" title="Lihat Detail">
+                                                    <i class='mdi mdi-eye'></i>
+                                                </a>
+                                            </div>
                                         </td>
-
                                     </tr>
-                                @empty
-                                    <tr><td colspan="6" class="text-center">Belum ada data</td></tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -63,5 +46,4 @@
         </div>
     </div>
 </div>
-
 @endsection

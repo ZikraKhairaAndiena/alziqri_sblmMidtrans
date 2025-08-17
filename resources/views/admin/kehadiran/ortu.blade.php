@@ -23,7 +23,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">Belum ada transaksi tabungan.</td>
+                                    <td colspan="5" class="text-center">Belum ada kehadiran.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

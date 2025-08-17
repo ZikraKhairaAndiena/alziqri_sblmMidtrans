@@ -14,7 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::latest()->paginate(7);
+        $users = User::latest()->paginate(10);
         return view('admin.pengguna.index', ['users' => $users]);
     }
 
@@ -111,6 +111,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('admin.pengguna.index')->with('success', 'Data siswa berhasil dihapus!');
+        return redirect()->route('admin.pengguna.index')->with('success', 'User deleted successfully!');
     }
 }

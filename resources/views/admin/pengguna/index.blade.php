@@ -9,6 +9,11 @@
                     <h2 class="card-title text-center fw-bold mb-4">Data Pengguna</h2>
                     <div class="table-responsive">
                         <a href="{{ route('admin.pengguna.create') }}" class="btn btn-success btn-sm mb-3">Tambah Pengguna</a>
+
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+
                         <table class="table">
                             <thead>
                             <tr>
@@ -32,13 +37,13 @@
                                                 <i class='bx bx-show'></i>
                                             </a> --}}
                                             <a href="{{ route('admin.pengguna.edit', $user->id) }}" class="btn btn-warning btn-sm me-1" title="Edit Data">
-                                                <i class='bx bx-edit'></i>Edit
+                                                <i class='mdi mdi-eye'></i>
                                             </a>
                                             <form action="{{ route('admin.pengguna.destroy', $user->id) }}" method="POST" class="d-inline form-delete">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')">
-                                                    <i class='bx bx-trash'></i>Hapus
+                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')" title="Hapus Data">
+                                                    <i class='mdi mdi-delete'></i>
                                                 </button>
                                             </form>
                                         </div>

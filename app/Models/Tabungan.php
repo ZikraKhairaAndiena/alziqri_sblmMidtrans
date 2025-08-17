@@ -18,7 +18,7 @@ class Tabungan extends Model
         'jenis_transaksi',
         'jumlah',
         'saldo',
-        'bukti',
+        'ket',
     ];
 
     public function siswa()

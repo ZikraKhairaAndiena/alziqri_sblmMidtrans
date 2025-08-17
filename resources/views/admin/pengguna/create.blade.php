@@ -16,7 +16,7 @@
 
             <!-- Nama -->
             <div class="mb-3">
-                <label for="nama" class="form-label fw-semibold">Nama</label>
+                <label for="nama" class="form-label fw-semibold">Nama<span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('nama') is-invalid @enderror"
                        id="nama" name="nama" value="{{ old('nama') }}" placeholder="Masukkan Nama Pengguna" required>
                 @error('nama')
@@ -26,7 +26,7 @@
 
             <!-- Email -->
             <div class="mb-3">
-                <label for="email" class="form-label fw-semibold">Email</label>
+                <label for="email" class="form-label fw-semibold">Email<span class="text-danger">*</span></label>
                 <input type="email" class="form-control @error('email') is-invalid @enderror"
                        id="email" name="email" value="{{ old('email') }}" placeholder="Masukkan Email" required>
                 @error('email')
@@ -36,7 +36,7 @@
 
             <!-- Role -->
             <div class="mb-3">
-                <label for="role" class="form-label fw-semibold">Role</label>
+                <label for="role" class="form-label fw-semibold">Role<span class="text-danger">*</span></label>
                 <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
                     <option value="">-- Pilih Role --</option>
                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
@@ -50,7 +50,7 @@
 
             <!-- Password -->
             <div class="mb-3">
-                <label for="password" class="form-label fw-semibold">Password</label>
+                <label for="password" class="form-label fw-semibold">Password<span class="text-danger">*</span></label>
                 <input type="password" class="form-control @error('password') is-invalid @enderror"
                        id="password" name="password" placeholder="Masukkan Password" required>
                 @error('password')
@@ -60,7 +60,7 @@
 
             <!-- Konfirmasi Password -->
             <div class="mb-4">
-                <label for="password_confirmation" class="form-label fw-semibold">Konfirmasi Password</label>
+                <label for="password_confirmation" class="form-label fw-semibold">Konfirmasi Password<span class="text-danger">*</span></label>
                 <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
                        id="password_confirmation" name="password_confirmation" placeholder="Ulangi Password" required>
                 @error('password_confirmation')

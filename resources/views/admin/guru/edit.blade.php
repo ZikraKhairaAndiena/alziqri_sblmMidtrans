@@ -15,61 +15,93 @@
             @method('PUT')
 
             <div class="mb-3">
-                <label for="user_id" class="form-label fw-semibold">Akun User</label>
-                <select name="user_id" id="user_id" class="form-select" required>
-                    <option value="">-- Pilih Akun --</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}" {{ $guru->user_id == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }}
-                        </option>
-                    @endforeach
-                </select>
+                <label class="form-label fw-semibold">Akun User</label>
+                <input type="text" class="form-control" value="{{ $guru->user->name }}" disabled>
+                <input type="hidden" name="user_id" value="{{ $guru->user_id }}">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">NIP</label>
-                <input type="text" name="nip" class="form-control" maxlength="30" value="{{ $guru->nip }}" required>
+                <label class="form-label">NIP<span class="text-danger">*</span></label>
+                <input type="text" name="nip" maxlength="30"
+                       class="form-control @error('nip') is-invalid @enderror"
+                       value="{{ old('nip', $guru->nip) }}" required>
+                @error('nip')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Nama Lengkap</label>
-                <input type="text" name="nama_guru" class="form-control" maxlength="100" value="{{ $guru->nama_guru }}" required>
+                <input type="text" name="nama_guru" maxlength="100"
+                       class="form-control @error('nama_guru') is-invalid @enderror"
+                       value="{{ old('nama_guru', $guru->nama_guru) }}" required>
+                @error('nama_guru')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Jenis Kelamin</label>
-                <select name="jenis_kelamin" class="form-select" required>
-                    <option value="L" {{ $guru->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                    <option value="P" {{ $guru->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
+                <label class="form-label">Jenis Kelamin<span class="text-danger">*</span></label>
+                <select name="jenis_kelamin" class="form-select @error('jenis_kelamin') is-invalid @enderror" required>
+                    <option value="L" {{ old('jenis_kelamin', $guru->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                    <option value="P" {{ old('jenis_kelamin', $guru->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
                 </select>
+                @error('jenis_kelamin')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Tanggal Lahir</label>
-                <input type="date" name="tgl_lahir" class="form-control" value="{{ $guru->tgl_lahir }}" required>
+                <label class="form-label">Tanggal Lahir<span class="text-danger">*</span></label>
+                <input type="date" name="tgl_lahir"
+                       class="form-control @error('tgl_lahir') is-invalid @enderror"
+                       value="{{ old('tgl_lahir', $guru->tgl_lahir) }}" required>
+                @error('tgl_lahir')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Alamat</label>
-                <textarea name="alamat" class="form-control" rows="3" required>{{ $guru->alamat }}</textarea>
+                <label class="form-label">Alamat<span class="text-danger">*</span></label>
+                <textarea name="alamat" rows="3"
+                          class="form-control @error('alamat') is-invalid @enderror" required>{{ old('alamat', $guru->alamat) }}</textarea>
+                @error('alamat')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
-                <label class="form-label">No. Telepon</label>
-                <input type="text" name="no_telp" class="form-control" maxlength="15" value="{{ $guru->no_telp }}" required>
+                <label class="form-label">No. Telepon<span class="text-danger">*</span></label>
+                <input type="text" name="no_telp" maxlength="15"
+                       class="form-control @error('no_telp') is-invalid @enderror"
+                       value="{{ old('no_telp', $guru->no_telp) }}" required>
+                @error('no_telp')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            {{-- <div class="mb-3">
-                <label class="form-label">Foto</label>
-                <input type="file" name="foto" class="form-control" accept="image/*">
-                @if ($guru->foto)
-                    <small class="d-block mt-2">Foto saat ini:</small>
-                    <img src="{{ asset('storage/' . $guru->foto) }}" alt="Foto Guru" class="img-thumbnail mt-1" width="120">
-                @endif
-            </div> --}}
+            <div class="mb-3">
+                <label class="form-label">Tanggal Mulai Mengajar<span class="text-danger">*</span></label>
+                <input type="date" name="tgl_mulai_ngajar"
+                       class="form-control @error('tgl_mulai_ngajar') is-invalid @enderror"
+                       value="{{ old('tgl_mulai_ngajar', $guru->tgl_mulai_ngajar) }}" required>
+                @error('tgl_mulai_ngajar')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
             <div class="mb-3">
-                    <label>Foto guru</label><br>
+                <label class="form-label">Pendidikan Terakhir<span class="text-danger">*</span></label>
+                <input type="text" name="pend_terakhir" maxlength="30"
+                       class="form-control @error('pend_terakhir') is-invalid @enderror"
+                       value="{{ old('pend_terakhir', $guru->pend_terakhir) }}" required>
+                @error('pend_terakhir')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                    <label>Foto guru<span class="text-danger">*</span></label><br>
                     @if($guru->foto)
                         <img src="{{ asset('img/' . $guru->foto) }}" alt="Foto guru" width="100" class="mb-2"><br>
                     @endif
@@ -78,16 +110,6 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-
-            <div class="mb-3">
-                <label class="form-label">Tanggal Mulai Mengajar</label>
-                <input type="date" name="tgl_mulai_ngajar" class="form-control" value="{{ $guru->tgl_mulai_ngajar }}" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Pendidikan Terakhir</label>
-                <input type="text" name="pend_terakhir" class="form-control" maxlength="30" value="{{ $guru->pend_terakhir }}" required>
-            </div>
 
             <div class="d-flex justify-content-end gap-2">
                 <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">

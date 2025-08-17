@@ -30,7 +30,7 @@ class LoginController extends Controller
         // Coba login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Hindari session fixation
-            return redirect()->intended('/dashboard'); // Redirect ke dashboard
+            return redirect()->intended('/dashboard')->with('success', 'Anda telah berhasil login.'); // Redirect ke dashboard
         }
 
         // Jika autentikasi gagal, kembali ke halaman login dengan pesan error
@@ -47,7 +47,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login')->with('success', 'Anda telah berhasil logout.');
+        return redirect('/')->with('success', 'Anda telah berhasil logout.');
     }
 
     /**

@@ -9,6 +9,11 @@
                     <h2 class="card-title text-center fw-bold mb-4">Data Tahun Ajaran</h4>
                     <div class="table-responsive">
                         <a href="{{ route('admin.thn_ajaran.create') }}" class="btn btn-success btn-sm mb-3">Tambah Tahun Ajaran</a>
+
+                        @if(session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+
                         <table class="table">
                             <thead>
                             <tr>
@@ -26,17 +31,17 @@
                                     <td>{{ ucfirst($thn_ajaran->status) }}</td>
                                     <td class="text-nowrap text-center">
                                         <div class="btn-group" role="group">
-                                            {{-- <a href="{{ route('admin.thn_ajaran.show', $thn_ajaran->id) }}" class="btn btn-success btn-sm me-1" title="Lihat Detail">
-                                                <i class='bx bx-show'></i>
+                                            {{-- <a href="{{ route('admin.thn_ajaran.show', $thn_ajaran->id) }}" class="btn btn-info btn-sm me-1" title="Lihat Detail">
+                                                <i class='mdi mdi-eye'></i>
                                             </a> --}}
                                             <a href="{{ route('admin.thn_ajaran.edit', $thn_ajaran->id) }}" class="btn btn-warning btn-sm me-1" title="Edit Data">
-                                                <i class='bx bx-edit'></i>Edit
+                                                <i class='mdi mdi-pencil'></i>
                                             </a>
                                             <form action="{{ route('admin.thn_ajaran.destroy', $thn_ajaran->id) }}" method="POST" class="d-inline form-delete">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')">
-                                                    <i class='bx bx-trash'></i>Hapus
+                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')" title="Hapus Data">
+                                                    <i class='mdi mdi-delete'></i>
                                                 </button>
                                             </form>
                                         </div>

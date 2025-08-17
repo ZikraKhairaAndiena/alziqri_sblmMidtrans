@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guru;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +17,7 @@ class PembayaranController extends Controller
     public function __construct()
     {
         // Konfigurasi Midtrans
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$serverKey = config('midtrans.serverKey');
         Config::$isProduction = false; // Ganti true jika sudah live
         Config::$isSanitized = true;
         Config::$is3ds = true;
@@ -30,11 +32,11 @@ class PembayaranController extends Controller
             if (!$siswa) {
                 return back()->with('error', 'Data siswa tidak ditemukan');
             }
-            $pembayarans = Pembayaran::where('siswa_id', $siswa->id)->get();
+            $pembayarans = Pembayaran::where('siswa_id', $siswa->id)->latest()->paginate(10);
             return view('admin.pembayaran.index', compact('pembayarans', 'siswa'));
         }
 
-        $pembayarans = Pembayaran::with('siswa')->get();
+        $pembayarans = Pembayaran::with('siswa')->orderBy('created_at', 'desc')->get();
         return view('admin.pembayaran.index', compact('pembayarans'));
     }
 
@@ -111,76 +113,70 @@ class PembayaranController extends Controller
         return redirect($paymentUrl);
     }
 
-    /**
-     * Callback / Webhook dari Midtrans
-     */
-    public function callback(Request $request)
-    {
-        $serverKey = env('MIDTRANS_SERVER_KEY');
-        $data = $request->all();
-
-        $signatureKey = $data['signature_key'] ?? '';
-
-        // Validasi signature
-        $hashed = hash('sha512',
-            $data['order_id'] .
-            $data['status_code'] .
-            $data['gross_amount'] .
-            $serverKey
-        );
-
-        if ($signatureKey !== $hashed) {
-            Log::warning('❌ Signature Midtrans tidak valid', ['data' => $data]);
-            return response()->json(['message' => 'Invalid signature'], 403);
-        }
-
-        $orderId = $data['order_id'];
-
-        $pembayaran = Pembayaran::where('order_id', $orderId)->first();
-
-        if (!$pembayaran) {
-            Log::warning('❌ Pembayaran tidak ditemukan', ['order_id' => $orderId]);
-            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
-        }
-
-        $transactionStatus = $data['transaction_status'];
-
-        // Update status
-        if ($transactionStatus === 'settlement') {
-            $pembayaran->status_bayar = 'paid';
-            $pembayaran->tgl_bayar = now();
-        } elseif ($transactionStatus === 'pending') {
-            $pembayaran->status_bayar = 'pending';
-        } elseif (in_array($transactionStatus, ['expire', 'cancel', 'deny'])) {
-            $pembayaran->status_bayar = match ($transactionStatus) {
-                'expire' => 'expired',
-                'cancel' => 'cancelled',
-                'deny'   => 'denied',
-            };
-        } elseif ($transactionStatus === 'capture') {
-            if (($data['payment_type'] ?? '') === 'credit_card') {
-                if (($data['fraud_status'] ?? '') === 'challenge') {
-                    $pembayaran->status_bayar = 'pending';
-                } else {
-                    $pembayaran->status_bayar = 'paid';
-                    $pembayaran->tgl_bayar = now();
-                }
-            }
-        }
-
-        $pembayaran->save();
-
-        Log::info('✅ Midtrans webhook diproses', [
-            'order_id' => $orderId,
-            'status' => $pembayaran->status_bayar,
-            'transaction_status' => $transactionStatus,
-        ]);
-
-        return response()->json(['message' => 'Success']);
-    }
-
     public function success()
     {
         return view('admin.pembayaran.success');
     }
+
+    public function invoice($id)
+    {
+        $kepsek = Guru::where('jabatan', 'kepala_sekolah')->first();
+
+        $pembayaran = Pembayaran::with('siswa')->findOrFail($id);
+
+        $totalTagihan = 2000000; // statis
+
+        $totalTerbayar = Pembayaran::where('siswa_id', $pembayaran->siswa_id)
+        ->where('status_bayar', 'paid')
+        ->where('id', '<=', $id) // hanya pembayaran sampai invoice ini
+        ->sum('nominal_bayar');
+
+        $sisaTagihan = max($totalTagihan - $totalTerbayar, 0);
+
+        // Jumlah bayar di invoice ini
+        $jumlahBayar = $pembayaran->nominal_bayar;
+
+
+        // $jumlahBayar = $pembayaran->nominal_bayar;
+        // $sisaTagihan = $totalTagihan - $jumlahBayar;
+        // $total_dibayar = $jumlahBayar;
+
+        $pdf = Pdf::loadView('admin.pembayaran.invoice', [
+            'pembayaran' => $pembayaran,
+            'total_tagihan' => $totalTagihan,
+            'jumlah_bayar' => $jumlahBayar,
+            'sisa_tagihan' => $sisaTagihan,
+            'total_dibayar' => $totalTerbayar,
+            'kepsek' => $kepsek,
+        ]);
+
+        return $pdf->stream('Invoice-'.$pembayaran->id.'.pdf');
+    }
+
+    public function riwayat($siswa_id)
+    {
+        // Ambil data siswa
+        $siswa = \App\Models\Siswa::findOrFail($siswa_id);
+
+        // Ambil semua pembayaran siswa ini
+        $pembayarans = \App\Models\Pembayaran::where('siswa_id', $siswa_id)
+            ->orderBy('tgl_bayar', 'desc')
+            ->get();
+
+        // Hitung total terbayar
+        $totalTagihan = 2000000; // Bisa juga ambil dari DB jika dinamis
+        $totalTerbayar = $pembayarans->where('status_bayar', 'paid')->sum('nominal_bayar');
+        $sisaTagihan = max($totalTagihan - $totalTerbayar, 0);
+        $persentaseBayar = $totalTagihan > 0 ? round(($totalTerbayar / $totalTagihan) * 100, 2) : 0;
+
+        return view('admin.pembayaran.riwayat', compact(
+            'siswa',
+            'pembayarans',
+            'totalTagihan',
+            'totalTerbayar',
+            'sisaTagihan',
+            'persentaseBayar'
+        ));
+    }
+
 }

@@ -15,7 +15,7 @@
                                     <th>Jenis</th>
                                     <th>Jumlah</th>
                                     <th>Saldo</th>
-                                    <th>Bukti</th>
+                                    <th>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -25,13 +25,7 @@
                                     <td>{{ ucfirst($tabungan->jenis_transaksi) }}</td>
                                     <td>Rp{{ number_format($tabungan->jumlah, 0, ',', '.') }}</td>
                                     <td>Rp{{ number_format($tabungan->saldo, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if($tabungan->bukti)
-                                            <img src="{{ asset('storage/' . $tabungan->bukti) }}" width="50" height="50" class="rounded">
-                                        @else
-                                            <span class="text-muted">Tidak ada</span>
-                                        @endif
-                                    </td>
+                                    <td>{{ $tabungan->ket }}</td>
                                 </tr>
                                 @empty
                                 <tr>

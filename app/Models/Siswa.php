@@ -12,6 +12,7 @@ class Siswa extends Model
 
     protected $fillable = [
         'user_id',
+        'kelas_id',
         'nisn',
         'nama_siswa',
         'jenis_kelamin',
@@ -52,6 +53,21 @@ class Siswa extends Model
     public function kehadirans()
     {
         return $this->hasMany(Kehadiran::class, 'siswa_id');
+    }
+
+    public function rapors()
+    {
+        return $this->hasMany(Rapor::class, 'siswa_id');
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasMany(Pembayaran::class, 'siswa_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
 }

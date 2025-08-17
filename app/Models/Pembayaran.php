@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pembayaran extends Model
 {
+    /** @use HasFactory<\Database\Factories\PembayaranFactory> */
     use HasFactory;
+
+    protected $table = 'pembayarans';
 
     protected $fillable = [
         'siswa_id',
@@ -20,6 +23,6 @@ class Pembayaran extends Model
 
     public function siswa()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Siswa::class, 'siswa_id');
     }
 }

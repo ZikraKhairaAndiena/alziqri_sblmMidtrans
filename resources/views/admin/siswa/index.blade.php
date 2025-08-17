@@ -6,6 +6,9 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center fw-bold mb-4">Data Siswa</h4>
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -42,12 +45,12 @@
                                     </td>
                                     <td class="text-nowrap text-center">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('admin.siswa.show', $siswa->id) }}" class="btn btn-success btn-sm me-1"><i class='bx bx-eye'></i>Lihat</a>
-                                            <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="btn btn-warning btn-sm me-1"><i class='bx bx-edit'></i>Edit</a>
+                                            <a href="{{ route('admin.siswa.show', $siswa->id) }}" class="btn btn-info btn-sm me-1" title="Lihat Detail"><i class='mdi mdi-eye'></i></a>
+                                            <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="btn btn-warning btn-sm me-1" title="Edit Data"><i class='mdi mdi-pencil'></i></a>
                                             <form action="{{ route('admin.siswa.destroy', $siswa->id) }}" method="POST" class="d-inline form-delete">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')"><i class='bx bx-trash'></i>Hapus</button>
+                                                <button type="submit" class="btn btn-danger btn-sm btn-delete" onclick="return confirm('Yakin akan menghapus data ini?')" title="Hapus Data"><i class='mdi mdi-delete'></i></button>
                                             </form>
                                         </div>
                                     </td>

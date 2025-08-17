@@ -29,8 +29,8 @@
                 @csrf
 
                 <div class="mb-3">
-                    <label for="nominal_bayar" class="form-label">Nominal Bayar</label>
-                    <input type="number" name="nominal_bayar" id="nominal_bayar"
+                    <label for="nominal_bayar" class="form-label">Nominal Bayar<span class="text-danger">*</span></label>
+                    <input type="text" name="nominal_bayar" id="nominal_bayar"
                            class="form-control @error('nominal_bayar') is-invalid @enderror"
                            min="10000" max="{{ $sisaTagihan }}" required>
                     <small class="text-muted">Minimal Rp 10.000, maksimal Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</small>
@@ -48,3 +48,22 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nominalInput = document.getElementById('nominal_bayar');
+
+    nominalInput.addEventListener('input', function (e) {
+        // Hapus semua karakter selain angka
+        let value = this.value.replace(/\D/g, '');
+
+        // Format angka pakai titik setiap ribuan
+        this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    });
+
+    // Pastikan sebelum submit, titik dihapus
+    nominalInput.form.addEventListener('submit', function () {
+        nominalInput.value = nominalInput.value.replace(/\./g, '');
+    });
+});
+</script>
